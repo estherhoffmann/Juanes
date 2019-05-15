@@ -108,15 +108,13 @@ while aberto:
 
     pygame.display.flip()
 
-comando = "swipl -s juanes.pl -g 'solucao_bl([" + str(x_tam_mapa) + ", " + str(robo_lista) + ", 0, "+ str(power_lista) + ", " + str(parede_lista) + ", " + str(sujeira_lista) + ", " + str(lixeira_lista) + ", " + str(elevador_lista) + "], X), write(X), halt.' > resultado "
+comando = "swipl -s juanes.pl -g 'busca([" + str(x_tam_mapa) + ", " + str(robo_lista) + ", 0, "+ str(power_lista) + ", " + str(parede_lista) + ", " + str(sujeira_lista) + ", " + str(lixeira_lista) + ", " + str(elevador_lista) + "], X), write(X), halt.' > resultado "
 
 os.system(comando)
 
 f = open("resultado", "r")
 result = ast.literal_eval(f.read())
 
-#pygame.init()
-#screen = pygame.display.set_mode(size)
 
 aberto = True
 draw_bg()
