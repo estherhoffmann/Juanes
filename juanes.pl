@@ -66,6 +66,25 @@ vazio(Lista) :-
   not(pertence(_, Lista)).
 
 % ROBO
+% Robo chega em uma lixeira COM 2 LIXOS e joga sujeiras no lixo
+s([Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [Limite_Mapa, Robo, Saida_Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
+  pertence(Robo, Lixeiras),
+  Qnt_Lixos_Robo = 2,
+  Saida_Qnt_Lixos_Robo is 0.
+
+% Robo recolhe uma sujeira
+s([Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [Limite_Mapa, Robo, Saida_Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Saida_Lixos, Lixeiras, Elevadores]) :-
+  pertence(Robo, Lixos),
+  retirar_elemento(Robo, Lixos, Saida_Lixos),
+  Qnt_Lixos_Robo < 2,
+  Saida_Qnt_Lixos_Robo is Qnt_Lixos_Robo + 1.
+
+% Robo chega em uma lixeira e joga sujeiras no lixo, caso ele não tenha 2 lixos em mãos
+s([Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [Limite_Mapa, Robo, Saida_Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
+  pertence(Robo, Lixeiras),
+  Qnt_Lixos_Robo > 0,
+  Saida_Qnt_Lixos_Robo is 0.
+
 
 % Robo se move na horizontal PARA A DIREITA
 s([Limite_Mapa, [X_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [Limite_Mapa, [X_Saida_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
@@ -79,7 +98,7 @@ s([Limite_Mapa, [X_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, L
   X_Robo >= 0,
   not(pertence([X_Robo,Y_Robo], Paredes)).
 
-% Robo sonbe e desce nos elevadores
+% Robo sobe e desce nos elevadores
 s([Limite_Mapa, [X_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [Limite_Mapa, [X_Robo, Y_Saida_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
   pertence([X_Robo, Y_Robo], Elevadores),
   ((Y_Saida_Robo is Y_Robo + 1,
@@ -87,28 +106,11 @@ s([Limite_Mapa, [X_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, L
   (Y_Saida_Robo is Y_Robo - 1,
   pertence([X_Robo, Y_Saida_Robo], Elevadores))).
 
-% Robo recolhe uma sujeira
-s([Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [Limite_Mapa, Robo, Saida_Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Saida_Lixos, Lixeiras, Elevadores]) :-
-  pertence(Robo, Lixos),
-  retirar_elemento(Robo, Lixos, Saida_Lixos),
-  Qnt_Lixos_Robo < 2,
-  Saida_Qnt_Lixos_Robo is Qnt_Lixos_Robo + 1.
 
-% Robo chega em uma lixeira COM 2 LIXOS e joga sujeiras no lixo
-s([Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [Limite_Mapa, Robo, Saida_Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
-  pertence(Robo, Lixeiras),
-  Qnt_Lixos_Robo = 2,
-  Saida_Qnt_Lixos_Robo is 0.
-
-% Robo chega em uma lixeira e joga sujeiras no lixo, caso ele não tenha 2 lixos em mãos
-s([Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [Limite_Mapa, Robo, Saida_Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
-  pertence(Robo, Lixeiras),
-  Qnt_Lixos_Robo > 0,
-  Saida_Qnt_Lixos_Robo is 0.
 
 
 % Objetivo do robo
-meta([_, Robo, Qnt_Lixos_Robo, DockStation, _, Lixos, _, _]) :-
-    Robo = DockStation,
+meta([_, Robo, Qnt_Lixos_Robo, PosicaoDockStation, _, Lixos, _, _]) :-
+    Robo = PosicaoDockStation,
     vazio(Lixos),
     Qnt_Lixos_Robo = 0.
