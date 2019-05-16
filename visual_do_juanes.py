@@ -1,4 +1,5 @@
 import os
+import sys
 import ast
 import pprint
 import pygame
@@ -12,13 +13,14 @@ pygame.init()
 size = width, height = scale * x_tam_mapa, scale * x_tam_mapa
 screen = pygame.display.set_mode(size)
 
-robo = pygame.image.load("sprites/juanes.png")
-sujeira = pygame.image.load("sprites/tacos_lixo.png")
-power = pygame.image.load("sprites/sombreiro_dock.png")
-elevador = pygame.image.load("sprites/elevador.png")
-lixeira = pygame.image.load("sprites/mesa_lixeira.png")
-parede = pygame.image.load("sprites/parede.png")
-fundo = pygame.image.load("sprites/fundo.png")
+robo_esquerda = pygame.image.load("sprites/Juan-ElGato-esquerda.png")
+robo_direita = pygame.image.load("sprites/Juan-ElGato-direita.png")
+sujeira = pygame.image.load("sprites/Taco.png")
+power = pygame.image.load("sprites/Sombreiro.png")
+elevador = pygame.image.load("sprites/Elevador.png")
+lixeira = pygame.image.load("sprites/Mesa.png")
+parede = pygame.image.load("sprites/Parede.png")
+fundo = pygame.image.load("sprites/Fundo.png")
 
 robo_lista = []
 elevador_lista = []
@@ -27,7 +29,8 @@ sujeira_lista = []
 parede_lista = []
 power_lista = []
 
-robo = pygame.transform.scale(robo, (scale, scale))
+robo_esquerda = pygame.transform.scale(robo_esquerda, (scale, scale))
+robo_direita = pygame.transform.scale(robo_direita, (scale, scale))
 sujeira = pygame.transform.scale(sujeira, (scale, scale))
 power = pygame.transform.scale(power, (scale, scale))
 elevador = pygame.transform.scale(elevador, (scale, scale))
@@ -39,7 +42,8 @@ fundo = pygame.transform.scale(fundo, (scale, scale))
 def draw_element(elemento, mouse_x, mouse_y):
     screen.blit(elemento, pygame.Rect(mouse_x, mouse_y, scale, scale))
 
-def draw_state(estado):
+def draw_state(estado, PosicaoAnteriorRobo, DirecaoAnteriorRobo):
+    limite = estado[0] - 1
     robo1 = estado[1]
     power1 = estado[3]
     parede1 = estado[4]
@@ -55,10 +59,23 @@ def draw_state(estado):
         draw_element(lixeira, l[0] * scale, l[1] * scale)
     for e in elevador1:
         draw_element(elevador, e[0] * scale, e[1] * scale)
-    draw_element(robo, robo1[0] * scale, robo1[1] * scale)
     draw_element(power, power1[0] * scale, power1[1] * scale)
+    if PosicaoAnteriorRobo < robo1[0]:
+        draw_element(robo_direita, robo1[0] * scale, robo1[1] * scale)
+        DirecaoAnteriorRobo = 1
+    else:
+        if PosicaoAnteriorRobo > robo1[0]:
+            draw_element(robo_esquerda, robo1[0] * scale, robo1[1] * scale)
+            DirecaoAnteriorRobo = -1
+        else:
+            if DirecaoAnteriorRobo is -1:
+                draw_element(robo_esquerda, robo1[0] * scale, robo1[1] * scale)
+            else:
+                draw_element(robo_direita, robo1[0] * scale, robo1[1] * scale)
+
     pygame.time.wait(200)
     pygame.display.update()
+    return robo1[0], DirecaoAnteriorRobo
 
 def draw_bg():
     for i in range(0, x_tam_mapa):
@@ -71,7 +88,8 @@ draw_bg()
 while aberto:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            print(initial_state.getState())
+            pygame.quit()
+            sys.exit()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_p:
                 atual = parede
@@ -84,7 +102,7 @@ while aberto:
             if event.key == pygame.K_d:
                 atual = power
             if event.key == pygame.K_r:
-                atual = robo
+                atual = robo_direita
             if event.key == pygame.K_q:
                 aberto = False
 
@@ -103,7 +121,7 @@ while aberto:
                 elevador_lista.append([mouse_x, mouse_y])
             if atual == power:
                 power_lista = [mouse_x, mouse_y]
-            if atual == robo:
+            if atual == robo_direita:
                 robo_lista = [mouse_x, mouse_y]
 
     pygame.display.flip()
@@ -122,12 +140,14 @@ while aberto:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
-            system.exit()
+            sys.exit()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_q:
                 aberto = False
 
+    PosicaoAnteriorRobo = robo_lista[0]
+    DirecaoAnteriorRobo = 1
     for i in range(len(result)-1,-1,-1):
-        draw_state(result[i])
+        PosicaoAnteriorRobo, DirecaoAnteriorRobo = draw_state(result[i], PosicaoAnteriorRobo, DirecaoAnteriorRobo)
 
     pygame.time.wait(5000)
