@@ -42,19 +42,27 @@ lixeira = pygame.transform.scale(lixeira, (scale, scale))
 parede = pygame.transform.scale(parede, (scale, scale))
 fundo = pygame.transform.scale(fundo, (scale, scale))
 
+def verifica_saida():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_q:
+                pygame.quit()
+                sys.exit()
 
 def draw_element(elemento, mouse_x, mouse_y):
     screen.blit(elemento, pygame.Rect(mouse_x, mouse_y, scale, scale))
 
 def draw_state(estado, PosicaoAnteriorRobo, DirecaoAnteriorRobo):
-    limite_x = estado[0] - 1
-    limite_y = estado[1] -1
-    robo1 = estado[2]
-    power1 = estado[4]
-    parede1 = estado[5]
-    sujeira1 = estado[6]
-    lixeira1 = estado[7]
-    elevador1 = estado[8]
+    verifica_saida()
+    robo1 = estado[1]
+    power1 = estado[3]
+    parede1 = estado[4]
+    sujeira1 = estado[5]
+    lixeira1 = estado[6]
+    elevador1 = estado[7]
     draw_bg()
     for p in parede1:
         draw_element(parede, p[0] * scale, p[1] * scale)
@@ -131,8 +139,8 @@ while aberto:
 
     pygame.display.flip()
 
-comando = "swipl -s juanes.pl -g 'busca([" + str(x_tam_mapa) + ", "  + str(y_tam_mapa) + ", "  + str(robo_lista) + ", 0, "+ str(power_lista) + ", " + str(parede_lista) + ", " + str(sujeira_lista) + ", " + str(lixeira_lista) + ", " + str(elevador_lista) + "], X), write(X), halt.' > resultado "
-
+comando = "swipl -s juanes.pl -g 'busca([[" + str(x_tam_mapa) + ", "  + str(y_tam_mapa) + "], "  + str(robo_lista) + ", 0, "+ str(power_lista) + ", " + str(parede_lista) + ", " + str(sujeira_lista) + ", " + str(lixeira_lista) + ", " + str(elevador_lista) + "], X), write(X), halt.' > resultado "
+print(comando)
 os.system(comando)
 
 f = open("resultado", "r")
@@ -147,14 +155,7 @@ result = ast.literal_eval(f.read())
 aberto = True
 draw_bg()
 while aberto:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_q:
-                aberto = False
-
+    verifica_saida()
     PosicaoAnteriorRobo = robo_lista[0]
     DirecaoAnteriorRobo = 1
     for i in range(len(result)-1,-1,-1):
