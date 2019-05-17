@@ -7,10 +7,14 @@ import pygame
 res = 1024
 
 x_tam_mapa = int(input())
-scale = res // x_tam_mapa
+y_tam_mapa = int(input())
+if x_tam_mapa > y_tam_mapa:
+    scale = res // x_tam_mapa
+else:
+    scale = res // y_tam_mapa
 
 pygame.init()
-size = width, height = scale * x_tam_mapa, scale * x_tam_mapa
+size = width, height = scale * x_tam_mapa, scale * y_tam_mapa
 screen = pygame.display.set_mode(size)
 
 robo_esquerda = pygame.image.load("sprites/Juan-ElGato-esquerda.png")
@@ -43,13 +47,14 @@ def draw_element(elemento, mouse_x, mouse_y):
     screen.blit(elemento, pygame.Rect(mouse_x, mouse_y, scale, scale))
 
 def draw_state(estado, PosicaoAnteriorRobo, DirecaoAnteriorRobo):
-    limite = estado[0] - 1
-    robo1 = estado[1]
-    power1 = estado[3]
-    parede1 = estado[4]
-    sujeira1 = estado[5]
-    lixeira1 = estado[6]
-    elevador1 = estado[7]
+    limite_x = estado[0] - 1
+    limite_y = estado[1] -1
+    robo1 = estado[2]
+    power1 = estado[4]
+    parede1 = estado[5]
+    sujeira1 = estado[6]
+    lixeira1 = estado[7]
+    elevador1 = estado[8]
     draw_bg()
     for p in parede1:
         draw_element(parede, p[0] * scale, p[1] * scale)
@@ -79,7 +84,7 @@ def draw_state(estado, PosicaoAnteriorRobo, DirecaoAnteriorRobo):
 
 def draw_bg():
     for i in range(0, x_tam_mapa):
-        for j in range(0, x_tam_mapa):
+        for j in range(0, y_tam_mapa):
             draw_element(fundo, i * scale, j * scale)
 
 atual = None
@@ -126,11 +131,16 @@ while aberto:
 
     pygame.display.flip()
 
-comando = "swipl -s juanes.pl -g 'busca([" + str(x_tam_mapa) + ", " + str(robo_lista) + ", 0, "+ str(power_lista) + ", " + str(parede_lista) + ", " + str(sujeira_lista) + ", " + str(lixeira_lista) + ", " + str(elevador_lista) + "], X), write(X), halt.' > resultado "
+comando = "swipl -s juanes.pl -g 'busca([" + str(x_tam_mapa) + ", "  + str(y_tam_mapa) + ", "  + str(robo_lista) + ", 0, "+ str(power_lista) + ", " + str(parede_lista) + ", " + str(sujeira_lista) + ", " + str(lixeira_lista) + ", " + str(elevador_lista) + "], X), write(X), halt.' > resultado "
 
 os.system(comando)
 
 f = open("resultado", "r")
+if os.stat("resultado").st_size == 0:
+    print(" Não Existe Caminho :(")
+    pygame.quit()
+    sys.exit()
+
 result = ast.literal_eval(f.read())
 
 

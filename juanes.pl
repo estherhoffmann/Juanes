@@ -1,12 +1,14 @@
 % Determinando qual busca utilizar: Se o problema for > 4x4, utiliza busca em profundidade,
 % caso contrário, busca em largura
-busca([Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], Solucao) :-
-  Limite_Mapa < 5,
-  solucao_bl([Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], Solucao).
+busca([X_Limite_Mapa, Y_Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], Solucao) :-
+  X_Limite_Mapa < 5,
+  Y_Limite_Mapa < 5,
+  solucao_bl([X_Limite_Mapa, Y_Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], Solucao).
 
-busca([Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], Solucao) :-
-  Limite_Mapa > 4,
-  solucao_bp([Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], Solucao).
+busca([X_Limite_Mapa, Y_Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], Solucao) :-
+  (X_Limite_Mapa > 4;
+  Y_Limite_Mapa > 4),
+  solucao_bp([X_Limite_Mapa, Y_Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], Solucao).
 
 % BUSCA EM LARGURA:
 solucao_bl(Inicial,Solucao) :-
@@ -67,40 +69,42 @@ vazio(Lista) :-
 
 % ROBO
 % Robo recolhe uma sujeira
-s([Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [Limite_Mapa, Robo, Saida_Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Saida_Lixos, Lixeiras, Elevadores]) :-
+s([X_Limite_Mapa, Y_Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [X_Limite_Mapa, Y_Limite_Mapa, Robo, Saida_Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Saida_Lixos, Lixeiras, Elevadores]) :-
   pertence(Robo, Lixos),
   retirar_elemento(Robo, Lixos, Saida_Lixos),
   Qnt_Lixos_Robo < 2,
   Saida_Qnt_Lixos_Robo is Qnt_Lixos_Robo + 1.
 
 % Robo chega em uma lixeira e joga sujeiras no lixo, caso ele não tenha 2 lixos em mãos
-s([Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [Limite_Mapa, Robo, Saida_Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
+s([X_Limite_Mapa, Y_Limite_Mapa, Robo, Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [X_Limite_Mapa, Y_Limite_Mapa, Robo, Saida_Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
   pertence(Robo, Lixeiras),
   Qnt_Lixos_Robo > 0,
   Saida_Qnt_Lixos_Robo is 0.
 
 % Robo se move na horizontal PARA A DIREITA
-s([Limite_Mapa, [X_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [Limite_Mapa, [X_Saida_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
+s([X_Limite_Mapa, Y_Limite_Mapa, [X_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [X_Limite_Mapa, Y_Limite_Mapa, [X_Saida_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
   X_Saida_Robo is X_Robo + 1,
-  X_Robo < Limite_Mapa,
+  X_Saida_Robo < X_Limite_Mapa,
   not(pertence([X_Saida_Robo,Y_Robo], Paredes)).
 
 % Robo se move na horizontal PARA A ESQUERDA
-s([Limite_Mapa, [X_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [Limite_Mapa, [X_Saida_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
+s([X_Limite_Mapa, Y_Limite_Mapa, [X_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [X_Limite_Mapa, Y_Limite_Mapa, [X_Saida_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
   X_Saida_Robo is X_Robo - 1,
-  X_Robo >= 0,
+  X_Saida_Robo >= 0,
   not(pertence([X_Saida_Robo,Y_Robo], Paredes)).
 
 % Robo sobe e desce nos elevadores
-s([Limite_Mapa, [X_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [Limite_Mapa, [X_Robo, Y_Saida_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
+s([X_Limite_Mapa, Y_Limite_Mapa, [X_Robo, Y_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores], [X_Limite_Mapa, Y_Limite_Mapa, [X_Robo, Y_Saida_Robo], Qnt_Lixos_Robo, PosicaoDockStation, Paredes, Lixos, Lixeiras, Elevadores]) :-
   pertence([X_Robo, Y_Robo], Elevadores),
   ((Y_Saida_Robo is Y_Robo + 1,
-  pertence([X_Robo, Y_Saida_Robo], Elevadores));
+  Y_Saida_Robo < Y_Limite_Mapa),
+  pertence([X_Robo, Y_Saida_Robo], Elevadores);
   (Y_Saida_Robo is Y_Robo - 1,
+  Y_Saida_Robo >= 0,
   pertence([X_Robo, Y_Saida_Robo], Elevadores))).
 
 % Objetivo do robo
-meta([_, Robo, Qnt_Lixos_Robo, PosicaoDockStation, _, Lixos, _, _]) :-
+meta([_, _, Robo, Qnt_Lixos_Robo, PosicaoDockStation, _, Lixos, _, _]) :-
     Robo = PosicaoDockStation,
     vazio(Lixos),
     Qnt_Lixos_Robo = 0.
